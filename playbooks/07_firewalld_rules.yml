@@ -1,0 +1,38 @@
+- name: Configure firewalld rules for IoT servers (RHEL)
+  hosts: iot_servers
+  become: true
+
+  vars:
+    allowed_services:
+      - ssh
+    allowed_ports:
+      - 1883/tcp   # MQTT
+      - 8883/tcp   # MQTT TLS (kalau dipakai)
+
+  tasks:
+    - name: Install firewalld
+      ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+    - name: Enable and start firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Allow required services
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ allowed_services }}"
+
+    - name: Allow required ports
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ allowed_ports }}"
