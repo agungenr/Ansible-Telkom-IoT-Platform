@@ -1,0 +1,9 @@
+timezone: "Asia/Jakarta"
+iot_agent_service: "iot-agent"
+iot_agent_config_path: "/etc/iot-agent/agent.conf"
+
+baseline_packages:
+  - curl
+  - git
+  - chrony
+  - rsyslog
