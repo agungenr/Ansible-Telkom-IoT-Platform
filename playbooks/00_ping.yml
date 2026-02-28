@@ -1,0 +1,7 @@
+- name: Connectivity check to IoT servers
+  hosts: iot_servers
+  gather_facts: false
+
+  tasks:
+    - name: Ping hosts
+      ansible.builtin.ping:
