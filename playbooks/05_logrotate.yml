@@ -1,0 +1,18 @@
+- name: Manage IoT service state
+  hosts: iot_servers
+  become: true
+
+  vars:
+    target_service: "{{ iot_agent_service }}"
+    desired_state: "started"   # started | stopped | restarted
+
+  tasks:
+    - name: Ensure service is enabled
+      ansible.builtin.service:
+        name: "{{ target_service }}"
+        enabled: true
+
+    - name: Apply desired state
+      ansible.builtin.service:
+        name: "{{ target_service }}"
+        state: "{{ desired_state }}"
