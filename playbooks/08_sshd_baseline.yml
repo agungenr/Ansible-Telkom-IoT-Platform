@@ -1,0 +1,27 @@
+- name: Apply SSH baseline settings (RHEL)
+  hosts: iot_servers
+  become: true
+
+  vars:
+    sshd_config: /etc/ssh/sshd_config
+
+  tasks:
+    - name: Ensure PasswordAuthentication is disabled
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^#?PasswordAuthentication\s+'
+        line: 'PasswordAuthentication no'
+      notify: Restart sshd
+
+    - name: Ensure PermitRootLogin is disabled
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^#?PermitRootLogin\s+'
+        line: 'PermitRootLogin no'
+      notify: Restart sshd
+
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
