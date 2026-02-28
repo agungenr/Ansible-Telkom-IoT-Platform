@@ -1,0 +1,33 @@
+- name: Deploy IoT agent configuration
+  hosts: iot_servers
+  become: true
+
+  vars:
+    iot_agent_config_content: |
+      # Sample IoT agent config
+      broker_host=mqtt.example.local
+      broker_port=1883
+      device_site=Kalimantan
+      log_level=INFO
+
+  tasks:
+    - name: Ensure config directory exists
+      ansible.builtin.file:
+        path: "{{ iot_agent_config_path | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Deploy agent config
+      ansible.builtin.copy:
+        dest: "{{ iot_agent_config_path }}"
+        content: "{{ iot_agent_config_content }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart IoT agent
+
+  handlers:
+    - name: Restart IoT agent
+      ansible.builtin.service:
+        name: "{{ iot_agent_service }}"
+        state: restarted
